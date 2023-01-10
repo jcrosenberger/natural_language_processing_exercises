@@ -24,6 +24,8 @@ def scrape_codeup(check=True):
     if check == False:
         df = codeup_blog()
                 
+        df.to_csv('codeup_blog_articles.csv', index=False)
+        
         return df
 
 
@@ -31,6 +33,8 @@ def scrape_codeup(check=True):
 ####### acquire urls, cleans df, and scrapes codeup #######
   ########################################################
 
+
+#######       Function block calling functions       #######
 def codeup_blog():
     df = codeup_hyperlinks()
     df = clean_hyperlinks(df)
