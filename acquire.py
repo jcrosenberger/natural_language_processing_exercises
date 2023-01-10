@@ -103,6 +103,7 @@ def clean_hyperlinks(df, arg=0):
 ####### fills list of dictionaries with webpage content #######
 def scrape_codeup_webpages(df):
 
+    headers = {'User-Agent' : 'Codeup Data Science'}
     number = df.shape[0]
     webpage_list = []
     no_content_list = []
@@ -110,14 +111,13 @@ def scrape_codeup_webpages(df):
 
         try: 
             url = df['url'][num]
-            headers = {'User-Agent' : 'Codeup Data Science'}
             
             # using a header which may allow scraping
             response = get(url, headers = headers)
             # using no header
             #response = get(url)
             
-            soup = BeautifulSoup(response.text)
+            soup = BeautifulSoup(response.text, 'html.parser')
             #main_content = soup.find('div', id='main-content')
             entry_content = soup.find('div', class_ ='entry-content')
             title = codeup_blog_df['title'][num]
