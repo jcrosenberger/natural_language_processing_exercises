@@ -14,7 +14,7 @@ import os
 def scrape_codeup(check=True):
 
     if check == True:
-        if isfile('codeup_blog_articles.csv'):
+        if os.path.isfile('codeup_blog_articles.csv'):
             return pd.read_csv('codeup_blog_articles.csv', index_col=[0])
         else:
             df = codeup_blog()
