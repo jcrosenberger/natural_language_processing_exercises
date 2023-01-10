@@ -3,7 +3,7 @@ from requests import get
 import pandas as pd
 import numpy as np
 import re
-
+import os
 
 
 ###################################################################
@@ -11,8 +11,27 @@ import re
 #######     acquires dataframe with title, url, content     #######
 ###################################################################
 
-def scrape_codeup():
+def scrape_codeup(check=True):
 
+    if check == True:
+        if isfile('codeup_blog_articles.csv'):
+            return pd.read_csv('codeup_blog_articles.csv', index_col=[0])
+        else:
+            df = codeup_blog()
+            
+            return df
+            
+    if check == False:
+        df = codeup_blog()
+                
+        return df
+
+
+  ########################################################
+####### acquire urls, cleans df, and scrapes codeup #######
+  ########################################################
+
+def codeup_blog():
     df = codeup_hyperlinks()
     df = clean_hyperlinks(df)
     webpage_list = scrape_codeup_webpages(df)
@@ -21,9 +40,6 @@ def scrape_codeup():
     return df
 
 
-  ########################################################
-####### acquire urls, cleans df, and scrapes codeup #######
-  ########################################################
 
 #######       acquire urls       #######
 def codeup_hyperlinks():
@@ -120,8 +136,8 @@ def scrape_codeup_webpages(df):
             soup = BeautifulSoup(response.text, 'html.parser')
             #main_content = soup.find('div', id='main-content')
             entry_content = soup.find('div', class_ ='entry-content')
-            title = codeup_blog_df['title'][num]
-            url   = codeup_blog_df['url'][num]
+            title = df['title'][num]
+            url   = df['url'][num]
             
             webpage_content = entry_content.text.strip()
             
@@ -135,7 +151,7 @@ def scrape_codeup_webpages(df):
             dictionary = {
                 'title': title,
                 'url' : url,
-                'num' : webpage_content
+                'content' : webpage_content
             }
             webpage_list.append(dictionary)
 
