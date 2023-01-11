@@ -18,7 +18,7 @@ def scrape_codeup(check=True):
             return pd.read_csv('codeup_blog_articles.csv', index_col=[0])
         else:
             df = codeup_blog()
-            
+            df.to_csv('codeup_blog_articles.csv', index=False)
             return df
             
     if check == False:
@@ -41,7 +41,7 @@ def scrape_news(check=True):
             return pd.read_csv('indian_news_articles.csv')
         else:
             df = indian_news()
-
+            df.to_csv('indian_news_articles.csv', index = False)
             return df
 
     if check == False:
