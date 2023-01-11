@@ -25,8 +25,87 @@ def scrape_codeup(check=True):
         df = codeup_blog()
                 
         df.to_csv('codeup_blog_articles.csv', index=False)
-        
+
         return df
+
+
+###################################################################
+##############       Primary Indian News Function       ##############
+#######     acquires dataframe with title, url, content     #######
+###################################################################
+
+def scrape_news(check=True):
+
+    if check == True:
+        if os.path.isfile('indian_news_articles.csv'):
+            return pd.read_csv('indian_news_articles.csv')
+        else:
+            df = indian_news()
+
+            return df
+
+    if check == False:
+        df = indian_news()
+
+        df.to_csv('indian_news_articles.csv', index = False)
+
+        return df         
+
+
+
+
+    ########################################################
+####### acquire urls, cleans df, and scrapes indian news #######
+    ########################################################
+
+def indian_news():
+
+    article_list = get_indian_news()
+    news_df = wrangle_indian_news(article_list)
+
+    return news_df
+
+
+def get_indian_news():
+    url = 'https://inshorts.com/en/read'
+    response = get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    categories = [li.text.lower() for li in soup.select('li')][1:]
+    #categories[0] = 'national'
+    news_articles = []
+    
+    for category in categories:
+        url = 'https://inshorts.com/en/read' + '/' + category
+        response = get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        titles = [span.text for span in soup.find_all('span', itemprop='headline')]
+        contents = [div.text for div in soup.find_all('div', itemprop='articleBody')]
+        for i in range(len(titles)):
+            news_articles_dict = {
+                'title': titles[i],
+                'content': contents[i],
+                'category': category,
+            }
+            news_articles.append(news_articles_dict)
+
+    return news_articles 
+
+
+def wrangle_indian_news(article_list):
+
+    news_df = pd.DataFrame(article_list)
+
+    # masking for the following article categories:
+    # business, sports, world, politics
+
+    news_df = news_df[(news_df['category'] == 'business') | 
+                    (news_df['category'] == 'sports') | 
+                    (news_df['category'] == 'world') | 
+                    (news_df['category'] == 'politics')]
+
+    return news_df 
+
 
 
   ########################################################
